@@ -312,16 +312,12 @@ class Banco {
     }
 
 
-    //falta a, f, h, questao 3 em diante
-    //atv1: falta os try e catch
 
 
 
 
 }
 
-//fazer testes
-//function testar
 
 
 function testar(descricao: string, condicao: boolean): void {
