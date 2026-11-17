@@ -1,4 +1,4 @@
-class Cliente {
+export class Cliente {
     id: number;
     nome: string;
     cpf: string;
@@ -24,15 +24,15 @@ class Cliente {
 
 
 
-class Conta {
+export class Conta {
     id: number;
     numero: string;
     saldo: number;
-    cliente!: Cliente;
+    cliente?: Cliente;
     dataDeAbertura: Date;
 
     constructor(id: number, numero: string, saldo: number,
-                dataDeAbertura: Date = new Date()) {
+        dataDeAbertura: Date = new Date()) {
         this.id = id;
         this.numero = numero;
         this.saldo = saldo;
@@ -68,7 +68,7 @@ class Conta {
 
 
 
-class Banco {
+export class Banco {
     contas: Conta[] = [];
     clientes: Cliente[] = [];
 
@@ -267,17 +267,17 @@ class Banco {
 
         if (indice != -1) {
 
-            let clienteContas = this.clientes[indice]!.contas;
-            for (let conta of clienteContas) {
-                this.excluir(conta.numero);
-            }
+            // let clienteContas = this.clientes[indice]!.contas;
+            // for (let conta of clienteContas) {
+            //     this.excluir(conta.numero);
+            // }
 
         for (let i = indice; i < this.clientes.length; i++) {
             this.clientes[i]! = this.clientes[i++]!;
         }
 
         this.clientes.pop(); } else {
-            throw new Error("Conta nao encontrada. ");
+            throw new Error("Cliente nao encontrado. ");
         }
     }
 
@@ -308,8 +308,115 @@ class Banco {
             origem.transferir(destino, valor);
         }
 
-
     }
+
+
+    proximoIdConta(): number {
+        let maior: number = 0;
+        for (let c of this.contas) {
+            if (c.id > maior) {
+                maior = c.id;
+            }
+        }
+        return maior + 1;
+    
+    }
+
+    proximoIdCliente(): number {
+        let maior: number = 0;
+        for (let c of this.clientes) {
+            if (c.id > maior) {
+                maior = c.id;
+            }
+        }
+        return maior + 1;
+    }
+
+    atualizarCliente(cliente: Cliente): void {
+        let antigoCliente: Cliente = this.consultarCliente(cliente.cpf);
+        antigoCliente.nome = cliente.nome;
+        antigoCliente.dataNascimento = cliente.dataNascimento;
+    }
+
+    associarContaCliente(numeroConta: string, cpfCliente: string): void {
+        let conta: Conta = this.consultar(numeroConta);
+        let cliente: Cliente = this.consultarCliente(cpfCliente);
+
+        if (cliente.possuiConta(conta)) {
+            throw new Error("A conta já está associada a este cliente");
+        }
+        if (conta.cliente) {
+            throw new Error("A conta já pertence a outro cliente");
+        }
+
+        cliente.contas.push(conta);
+        conta.cliente = cliente;
+    }
+
+    desvincularConta(conta: Conta): void {
+        let titular = conta.cliente;
+        if (titular) {
+            let pos: number = titular.contas.indexOf(conta);
+            if (pos != -1) {
+                titular.contas.splice(pos, 1);
+            }
+            conta.cliente = undefined;
+        }
+    }
+
+
+    mudarTitularidade(numeroConta: string, cpfNovoTitular: string): void {
+        let conta: Conta = this.consultar(numeroConta);
+        let novoTitular: Cliente = this.consultarCliente(cpfNovoTitular);
+
+        if (conta.cliente === novoTitular) {
+            throw new Error("Este cliente já é o titular da conta ");
+        }
+
+        this.desvincularConta(conta);
+
+        novoTitular.contas.push(conta);
+        conta.cliente = novoTitular;
+    }
+
+
+
+    listarContasSemCliente(): Conta[] {
+    let semCliente: Conta[] = [];
+        for (let c of this.contas) {
+            if (!c.cliente) {
+                semCliente.push(c);
+            }
+
+        }
+        return semCliente;
+    }
+
+
+
+
+    carregarDados(): void {
+        this.inserirCliente(new Cliente(1, "Ana", "111", new Date(1998, 4, 20)));
+        this.inserirCliente(new Cliente(2, "Bruno", "222", new Date(2000, 8, 5)));
+        this.inserirCliente(new Cliente(3, "Carla", "333", new Date(1995, 0, 12)));
+        this.inserirCliente(new Cliente(4, "Diego", "444", new Date(1989, 10, 30)));
+        this.inserirCliente(new Cliente(5, "Elisa", "555", new Date(2002, 6, 8)));
+
+        this.inserirConta(new Conta(1, "101", 1000, new Date(2020, 0, 15)));
+        this.inserirConta(new Conta(2, "102", 500, new Date(2021, 2, 3)));
+        this.inserirConta(new Conta(3, "103", 2500, new Date(2019, 6, 21)));
+        this.inserirConta(new Conta(4, "104", 300, new Date(2022, 10, 9)));
+        this.inserirConta(new Conta(5, "105", 1500, new Date(2023, 4, 17)));
+        this.inserirConta(new Conta(6, "106", 0, new Date(2024, 1, 1)));
+        this.inserirConta(new Conta(7, "107", 800, new Date(2024, 7, 14)));
+
+        this.associarContaCliente("101", "111");   // Ana: 101 e 102
+        this.associarContaCliente("102", "111");
+        this.associarContaCliente("103", "222");   // Bruno: 103
+        this.associarContaCliente("104", "333");   // Carla: 104
+        this.associarContaCliente("105", "444");   // Diego: 105
+    }
+
 
 
 
