@@ -430,7 +430,6 @@ export class Banco {
 function testar(descricao: string, condicao: boolean): void {
 
     if (condicao) {
-
         console.log(descricao);
     } else {
         console.log(descricao);
