@@ -15,8 +15,9 @@ class App {
 
             if (opcao != "0") {
                 input("\nDigite <enter>");
-            } while { (opcao != "0"); 
-        }
+
+
+        }  while { (opcao != "0"); }
         console.log("Fim");
 
     }
