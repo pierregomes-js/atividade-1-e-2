@@ -462,3 +462,16 @@ banco.inserirConta(new Conta(2, "102", 200));
 banco.inserirConta(new Conta(3, "103", 300));
 testar("insere 3 contas", banco.contas.length == 3);
 
+
+/* a)Sim, o banco acumula 3 responsabilidades:
+cadastro de clientes, cadastro de contas e regras de negócio
+
+b) Sim, seria mais adequado. CadastroDeContas e CadastroDeClientes ficariam apenas com 
+inserir, consultar, alterar e excluir, e o Banco aplicaria as regras de validação.
+
+
+
+c) No Banco. A associação precisa dos dois cadastros ao mesmo tempo;
+ e os cadastros devem ficar independentes um do outro.
+
+ */
